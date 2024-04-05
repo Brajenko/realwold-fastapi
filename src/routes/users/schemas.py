@@ -12,7 +12,7 @@ from pydantic import (
 
 Username = Annotated[str, StringConstraints(max_length=50)]
 Email = EmailStr
-Bio = str
+Bio = str | None
 Image = HttpUrl
 Following = StrictBool
 Password = SecretStr
@@ -55,25 +55,13 @@ class LoginUser(BaseRequestUser):
     pass
 
 
-class LoginRequest(BaseModel):
-    user: LoginUser
-
-
 class RegisterUser(BaseRequestUser):
     username: Username
 
 
-class RegisterRequest(BaseModel):
-    user: RegisterUser
-
-
 class UpdateUser(BaseModel):
-    email: Optional[Email]
-    username: Optional[Username]
-    password: Optional[Password]
-    image: Optional[Image]
-    bio: Optional[Bio]
-
-
-class UpdateRequest(BaseModel):
-    user: UpdateUser
+    email: Optional[Email] = None
+    username: Optional[Username] = None
+    password: Optional[Password] = None
+    image: Optional[Image] = None
+    bio: Optional[Bio] = None
