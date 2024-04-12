@@ -1,8 +1,9 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from src.util import jwt_manager, password_manager
+
 from . import models, schemas
-from src.util import password_manager, jwt_manager
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:
@@ -44,10 +45,8 @@ def authenficate_user(
     """Check credintials and return User"""
     db_user = db.query(models.User).filter(email == email).first()
     if not db_user:
-        print('no user')
         return None
     if not password_manager.verify_password(password, db_user.password):
-        print('wrong password')
         return None
     return db_user
 

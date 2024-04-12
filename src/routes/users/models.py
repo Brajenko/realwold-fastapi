@@ -1,5 +1,6 @@
+from sqlalchemy import Column, Integer, String, Text
+
 from src.config.database import Base
-from sqlalchemy import Column, String, Integer, Text
 
 
 class User(Base):

@@ -1,14 +1,7 @@
 from typing import Annotated, Optional
 
-from pydantic import (
-    BaseModel,
-    EmailStr,
-    HttpUrl,
-    SecretStr,
-    StrictBool,
-    StringConstraints,
-)
-
+from pydantic import (BaseModel, EmailStr, HttpUrl, SecretStr, StrictBool,
+                      StringConstraints)
 
 Username = Annotated[str, StringConstraints(max_length=50)]
 Email = EmailStr
@@ -28,12 +21,11 @@ class BaseResponseUser(BaseModel):
 class AuthenficatedUser(BaseResponseUser):
     email: Email
     token: Token
-    
-    class Config:
-        orm_mode = True
 
-    
-    
+    class Config:
+        from_attributes = True
+
+
 class UserResponse(BaseModel):
     user: AuthenficatedUser
 
@@ -43,7 +35,7 @@ class Profile(BaseResponseUser):
 
 
 class ProfileResponse(BaseModel):
-    profile: Profile    
+    profile: Profile
 
 
 class BaseRequestUser(BaseModel):
