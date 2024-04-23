@@ -1,17 +1,16 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
-
 from sqlalchemy.orm import Session
 
 from src.util.db_dependency import get_db
-from src.util.user_dependency import get_current_user
+from src.util.user_dependency import get_user
 
 from . import controller, models, schemas
 
-router = APIRouter()
+router = APIRouter(tags=['users'])
 
-auth_router = APIRouter(prefix='/users')
+auth_router = APIRouter(prefix='/users', tags=['auth'])
 
 
 @auth_router.post('/')
@@ -31,11 +30,6 @@ async def registration(
     return {'user': schemas.AuthenficatedUser(**created_user.__dict__, token=token)}
 
 
-@auth_router.get('/')
-async def get_all_users(db: Session = Depends(get_db)):
-    return db.query(models.User).all()
-
-
 @auth_router.post('/login')
 async def authentication(
     user: Annotated[schemas.LoginUser, Body(embed=True)],
@@ -46,19 +40,19 @@ async def authentication(
     if db_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='User not found',
+            detail='User with given credintials not found',
             headers={'WWW-Authenticate': 'Bearer'},
         )
     token = controller.create_access_token(db_user)
     return {'user': schemas.AuthenficatedUser(**db_user.__dict__, token=token)}
 
 
-user_router = APIRouter(prefix='/user')
+user_router = APIRouter(prefix='/user', tags=['current_user'])
 
 
 @user_router.get('/')
 async def get_current_user_view(
-    user: Annotated[models.User, Depends(get_current_user)],
+    user: Annotated[models.User, Depends(get_user)],
     db: Session = Depends(get_db),
 ) -> schemas.UserResponse:
     """Return current user"""
@@ -72,7 +66,7 @@ async def update_user(
         schemas.UpdateUser,
         Body(embed=True, serialization_alias='user', validation_alias='user', alias='user'),
     ],
-    user: Annotated[models.User, Depends(get_current_user)],
+    user: Annotated[models.User, Depends(get_user)],
     db: Session = Depends(get_db),
 ) -> schemas.UserResponse:
     """Update current user"""
@@ -81,5 +75,35 @@ async def update_user(
     return {'user': schemas.AuthenficatedUser(**updated_user.__dict__, token=token)}
 
 
+profile_router = APIRouter(prefix='/profile', tags=['profile'])
+
+
+@profile_router.get('/{username}')
+async def get_profile(
+    username: schemas.Username, user: models.User = Depends(get_user), db: Session = Depends(get_db)
+) -> schemas.ProfileResponse:
+    db_user = controller.get_user_by_username(db, username)
+    return {'profile': controller.profile_from_user(db_user, user)}
+
+
+@profile_router.post('/{username}/follow')
+async def follow_user(
+    username: schemas.Username, user: models.User = Depends(get_user), db: Session = Depends(get_db)
+) -> schemas.ProfileResponse:
+    user_to_follow = controller.get_user_by_username(db, username)
+    followed_user = controller.create_follow(db, user, user_to_follow)
+    return {'profile': controller.profile_from_user(followed_user, user)}
+
+
+@profile_router.post('/{username}/unfollow')
+async def unfollow_user(
+    username: schemas.Username, user: models.User = Depends(get_user), db: Session = Depends(get_db)
+) -> schemas.ProfileResponse:
+    user_to_unfollow = controller.get_user_by_username(db, username)
+    unfollowed_user = controller.delete_follow(db, user, user_to_unfollow)
+    return {'profile': controller.profile_from_user(unfollowed_user, user)}
+
+
 router.include_router(auth_router)
 router.include_router(user_router)
+router.include_router(profile_router)
