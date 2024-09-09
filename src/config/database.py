@@ -1,10 +1,12 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-db_username = 'conduit'
-db_password = 'conduit_password'
-db_url = '127.0.0.1:3306'
-db_name = 'conduitdb'
+db_username = os.environ.get('DB_USERNAME')
+db_password = os.environ.get('DB_PASSWORD')
+db_url = os.environ.get('DB_URL')
+db_name = os.environ.get('DB_NAME')
 
 connectionString = (
     f'mysql+mysqldb://{db_username}:{db_password}@{db_url}/{db_name}'
