@@ -18,18 +18,18 @@ def article_to_schema(article: models.Article, user: Optional[USER] = None) -> s
         createdAt=article.created_at,
         updatedAt=article.updated_at,
         favorited=(user in article.favorited_by),
-        favorites_count=len(article.favorited_by),
+        favoritesCount=len(article.favorited_by),
         author=profile_from_user(article.author, user),
     )
 
 
 def generate_slug(db: Session, title: str) -> str:
-    slug = '-'.join(title.lower().split(' '))
+    slug = "-".join(title.lower().split(" "))
     if get_article_by_slug(db, slug):
-        slug += '-1'
+        slug += "-1"
         while get_article_by_slug(db, slug):
-            slug, _, n = slug.rpartition('-')
-            slug += '-' + str(int(n) + 1)
+            slug, _, n = slug.rpartition("-")
+            slug += "-" + str(int(n) + 1)
     return slug
 
 
@@ -91,9 +91,9 @@ def get_articles(
     db: Session,
     limit: int,
     offset: int,
-    tag: str = None,
-    author: USER = None,
-    favorited: USER = None,
+    tag: Optional[str] = None,
+    author: Optional[USER] = None,
+    favorited: Optional[USER] = None,
 ) -> list[models.Article]:
     q = db.query(models.Article)
     if tag is not None:
@@ -105,7 +105,9 @@ def get_articles(
     return list(q.order_by(models.Article.created_at).limit(limit).offset(offset))
 
 
-def get_articles_by_followings(db: Session, user: USER, limit: int, offset: int) -> list[models.Article]:
+def get_articles_by_followings(
+    db: Session, user: USER, limit: int, offset: int
+) -> list[models.Article]:
     return list(
         db.query(models.Article)
         .join(models.Article.author)

@@ -1,9 +1,7 @@
-import datetime as dt
-
-
 from pydantic import BaseModel, PositiveInt
 
 from src.routes.users.schemas import Profile
+from src.util.global_schemas import MicrosecondsDateTime
 
 
 class CreateComment(BaseModel):
@@ -12,8 +10,8 @@ class CreateComment(BaseModel):
 
 class Comment(CreateComment):
     id: PositiveInt
-    createdAt: dt.datetime
-    updatedAt: dt.datetime
+    createdAt: MicrosecondsDateTime
+    updatedAt: MicrosecondsDateTime
     body: str
     author: Profile
 

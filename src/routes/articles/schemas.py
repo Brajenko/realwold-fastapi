@@ -1,8 +1,8 @@
-import datetime as dt
 from typing import Optional
 
-from pydantic import BaseModel, NonNegativeInt, PositiveInt
+from pydantic import BaseModel, NonNegativeInt
 
+from src.util.global_schemas import MicrosecondsDateTime
 from src.routes.users.schemas import Profile
 
 
@@ -10,7 +10,7 @@ class BaseArticle(BaseModel):
     title: str
     description: str
     body: str
-    tagList: Optional[list[str]] = []
+    tagList: list[str] = []
 
 
 class CreateArticle(BaseArticle):
@@ -25,10 +25,10 @@ class UpdateArticle(BaseModel):
 
 class Article(BaseArticle):
     slug: str
-    createdAt: dt.datetime
-    updatedAt: dt.datetime
+    createdAt: MicrosecondsDateTime
+    updatedAt: MicrosecondsDateTime
     favorited: bool
-    favorites_count: NonNegativeInt
+    favoritesCount: NonNegativeInt
     author: Profile
 
 
@@ -38,7 +38,7 @@ class ArticleResponse(BaseModel):
 
 class MultipleArticlesResponse(BaseModel):
     articles: list[Article]
-    articles_count: NonNegativeInt
+    articlesCount: NonNegativeInt
 
 
 class TagList(BaseModel):

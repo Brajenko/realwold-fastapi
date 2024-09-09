@@ -1,7 +1,6 @@
 from typing import Annotated, Optional
 
-from pydantic import (BaseModel, EmailStr, HttpUrl, SecretStr, StrictBool,
-                      StringConstraints)
+from pydantic import BaseModel, EmailStr, HttpUrl, SecretStr, StrictBool, StringConstraints
 
 Username = Annotated[str, StringConstraints(max_length=50)]
 Email = EmailStr

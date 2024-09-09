@@ -11,7 +11,7 @@ connectionString = (
 )
 
 # echo=True for debug
-engine = create_engine(connectionString, echo=True)
+engine = create_engine(connectionString)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, DateTime, ForeignKey, Table, Text
+from sqlalchemy import DateTime, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Comment(Base):
-    __tablename__ = 'comments'
+    __tablename__ = "comments"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     body: Mapped[str] = mapped_column(Text())
@@ -21,8 +21,8 @@ class Comment(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     author: Mapped[User] = relationship()
 
-    article_id: Mapped[int] = mapped_column(ForeignKey('articles.id'))
-    article: Mapped['Article'] = relationship(back_populates='comments')
+    article_id: Mapped[int] = mapped_column(ForeignKey("articles.id"))
+    article: Mapped["Article"] = relationship(back_populates="comments")

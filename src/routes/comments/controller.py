@@ -10,7 +10,7 @@ def get_comment_by_id(id: int, db: Session) -> Optional[models.Comment]:
     return db.query(models.Comment).get(id)
 
 
-def get_comments_by_article(article: Article, db:Session) -> list[Optional[models.Comment]]:
+def get_comments_by_article(article: Article, db: Session) -> list[models.Comment]:
     return list(db.query(models.Comment).filter(models.Comment.article == article))
 
 
@@ -20,11 +20,13 @@ def db_comment_to_schema(comment: models.Comment, user: Optional[USER] = None) -
         body=comment.body,
         createdAt=comment.created_at,
         updatedAt=comment.updated_at,
-        author=profile_from_user(comment.author, user)
+        author=profile_from_user(comment.author, user),
     )
 
 
-def create_comment(comment: schemas.CreateComment,article: Article, user: USER, db: Session) -> models.Comment:
+def create_comment(
+    comment: schemas.CreateComment, article: Article, user: USER, db: Session
+) -> models.Comment:
     db_comment = models.Comment(body=comment.body, author=user, article=article)
     db.add(db_comment)
     db.commit()
