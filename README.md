@@ -3,6 +3,8 @@
 
 Medium.com clone backend built using FastApi
 
+technologies: fast api, sqlalchemy, mysql
+
 ## Reference
 
 Created using this api specs:
